@@ -1,0 +1,4 @@
+streamlit
+finance-datareader
+pandas
+yfinance
