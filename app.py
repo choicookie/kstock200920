@@ -30,7 +30,7 @@ with col_title:
 with col_img:
     # 요청하신 대로 파일명을 '시바견_쿠키.png'로 수정했습니다.
     try:
-        st.image("시바견_쿠키.png", caption="마스코트: 쿠키 🐾", use_container_width=True)
+        st.image("시바견_쿠키.png", caption="마스코트: 시바쿠키 🐾", use_container_width=True)
     except:
         st.info("이미지 로딩 대기 중...")
 
