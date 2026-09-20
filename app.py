@@ -28,16 +28,18 @@ with col_title:
     st.markdown("최근 3개월간 주간 수익률 상위 20위에 진입한 종목과 최신 주간 Top 30 종목을 요약합니다. **(조건: 20일 이동평균선 상승 추세)**")
 
 with col_img:
-    # 깃허브에 업로드할 쿠키 사진 파일명을 정확히 매핑합니다.
+    # 요청하신 대로 파일명을 '시바견_쿠키.png'로 수정했습니다.
     try:
-        st.image("시바견_쿠키_2.png", caption="마스코트: 쿠키 🐾", use_container_width=True)
+        st.image("시바견_쿠키.png", caption="마스코트: 쿠키 🐾", use_container_width=True)
     except:
         st.info("이미지 로딩 대기 중...")
 
-# 유니버스 선택 (통합 옵션 최상단)
+# ---------------------------------------------------------
+# 유니버스 선택 (KOSPI 200 + KOSDAQ 150 통합 옵션 최상단 고정)
+# ---------------------------------------------------------
 universe = st.selectbox(
     "데이터 기준 유니버스를 선택하세요:",
-    ("KOSPI + KOSDAQ 전체", "KOSPI 전체", "KOSDAQ 전체", "KOSPI 200", "KOSDAQ 150")
+    ("KOSPI 200 + KOSDAQ 150 (통합)", "KOSPI + KOSDAQ 전체", "KOSPI 전체", "KOSDAQ 전체", "KOSPI 200", "KOSDAQ 150")
 )
 
 # ---------------------------------------------------------
@@ -47,7 +49,18 @@ universe = st.selectbox(
 def get_korean_tickers_and_names(universe_choice):
     df_market = pd.DataFrame()
     
-    if universe_choice == "KOSPI + KOSDAQ 전체":
+    if universe_choice == "KOSPI 200 + KOSDAQ 150 (통합)":
+        # 두 핵심 지수를 통합하여 가져옵니다.
+        df_k200 = fdr.StockListing('KOSPI').sort_values(by='Marcap', ascending=False).head(200)
+        df_kq150 = fdr.StockListing('KOSDAQ').sort_values(by='Marcap', ascending=False).head(150)
+        
+        essential_kosdaq = ['028300', '399720', '160190'] # 관심 종목 필수 편입 (ISC, 가온칩스, 하이젠알앤엠)
+        extra_df = fdr.StockListing('KOSDAQ')
+        extra_df = extra_df[extra_df['Code'].isin(essential_kosdaq)]
+        
+        df_market = pd.concat([df_k200, df_kq150, extra_df]).drop_duplicates(subset=['Code'])
+        
+    elif universe_choice == "KOSPI + KOSDAQ 전체":
         df_kospi = fdr.StockListing('KOSPI')
         df_kosdaq = fdr.StockListing('KOSDAQ')
         df_market = pd.concat([df_kospi, df_kosdaq]).drop_duplicates(subset=['Code'])
